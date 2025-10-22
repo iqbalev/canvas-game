@@ -15,27 +15,27 @@ const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const canvasCtx = canvas.getContext("2d") as CanvasRenderingContext2D;
 const canvasHeight = (canvas.height = window.innerHeight - 10);
 const canvasWidth = (canvas.width = window.innerWidth - 10);
-const gravityStrength = 2;
+const gravityAcceleration = 2;
 const keys: Keys = {};
 
 const player = {
-  x: 0,
-  y: canvasHeight - 64,
-  h: 64,
-  w: 64,
-  c: "black",
-  dy: 0,
-  jumpCharge: 0,
-  jumpStrength: 16,
+  xPosition: 0,
+  yPosition: canvasHeight - 64,
+  width: 64,
+  height: 64,
+  color: "black",
+  yVelocity: 0,
+  jumpHoldFrames: 0,
+  jumpVelocity: 16,
   isGrounded: false,
 };
 
 const obstacle = {
-  x: canvasWidth - 64,
-  y: canvasHeight - 64 - 48, // TODO: Randomize between air and ground obstacle.
-  h: 64,
-  w: 64,
-  c: "red",
+  xPosition: canvasWidth - 64,
+  yPosition: canvasHeight - 64 - 48, // TODO: Randomize between air and ground obstacle.
+  width: 64,
+  height: 64,
+  color: "red",
 };
 
 const clearDrawing = () => {
@@ -43,41 +43,51 @@ const clearDrawing = () => {
 };
 
 const drawPlayer = () => {
-  canvasCtx.fillStyle = player.c;
-  canvasCtx.fillRect(player.x, player.y, player.w, player.h);
+  canvasCtx.fillStyle = player.color;
+  canvasCtx.fillRect(
+    player.xPosition,
+    player.yPosition,
+    player.width,
+    player.height
+  );
 };
 
 const drawObstacle = () => {
-  canvasCtx.fillStyle = obstacle.c;
-  canvasCtx.fillRect(obstacle.x, obstacle.y, obstacle.w, obstacle.h);
+  canvasCtx.fillStyle = obstacle.color;
+  canvasCtx.fillRect(
+    obstacle.xPosition,
+    obstacle.yPosition,
+    obstacle.width,
+    obstacle.height
+  );
 };
 
 const gravity = () => {
-  if (player.y + player.h + player.dy < canvasHeight) {
-    player.dy += gravityStrength;
-    player.y += player.dy;
+  if (player.yPosition + player.height + player.yVelocity < canvasHeight) {
+    player.yVelocity += gravityAcceleration;
+    player.yPosition += player.yVelocity;
     player.isGrounded = false;
   } else {
-    player.dy = 0;
-    player.y = canvasHeight - player.h;
+    player.yVelocity = 0;
+    player.yPosition = canvasHeight - player.height;
     player.isGrounded = true;
   }
 };
 
 const jump = () => {
   if (keys[" "] || keys["w"] || keys["ArrowUp"]) {
-    if (player.isGrounded && player.jumpCharge === 0) {
-      player.jumpCharge = 1;
-      player.dy = -player.jumpStrength;
+    if (player.isGrounded && player.jumpHoldFrames === 0) {
+      player.jumpHoldFrames = 1;
+      player.yVelocity = -player.jumpVelocity;
     } else if (
-      player.jumpCharge > 0 &&
-      player.jumpCharge <= player.jumpStrength
+      player.jumpHoldFrames > 0 &&
+      player.jumpHoldFrames <= player.jumpVelocity
     ) {
-      player.jumpCharge++;
-      player.dy = -player.jumpStrength - player.jumpCharge / 75;
+      player.jumpHoldFrames++;
+      player.yVelocity = -player.jumpVelocity - player.jumpHoldFrames / 75;
     }
   } else {
-    player.jumpCharge = 0;
+    player.jumpHoldFrames = 0;
   }
 };
 
