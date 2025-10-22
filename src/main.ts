@@ -1,18 +1,32 @@
+type Keys = {
+  ArrowUp?: boolean;
+  ArrowLeft?: boolean;
+  ArrowDown?: boolean;
+  ArrowRight?: boolean;
+  w?: boolean;
+  a?: boolean;
+  s?: boolean;
+  d?: boolean;
+  Shift?: boolean;
+  " "?: boolean;
+};
+
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const canvasCtx = canvas.getContext("2d") as CanvasRenderingContext2D;
 const canvasHeight = (canvas.height = window.innerHeight - 10);
 const canvasWidth = (canvas.width = window.innerWidth - 10);
-
-let gravityStrength = 1;
+const gravityStrength = 2;
+const keys: Keys = {};
 
 const player = {
   x: 0,
-  // y: canvasHeight - 64,
-  y: 0, // TODO: Revert to the line above later.
+  y: canvasHeight - 64,
   h: 64,
   w: 64,
   c: "black",
   dy: 0,
+  jumpCharge: 0,
+  jumpStrength: 16,
   isGrounded: false,
 };
 
@@ -50,8 +64,26 @@ const gravity = () => {
   }
 };
 
+const jump = () => {
+  if (keys[" "] || keys["w"] || keys["ArrowUp"]) {
+    if (player.isGrounded && player.jumpCharge === 0) {
+      player.jumpCharge = 1;
+      player.dy = -player.jumpStrength;
+    } else if (
+      player.jumpCharge > 0 &&
+      player.jumpCharge <= player.jumpStrength
+    ) {
+      player.jumpCharge++;
+      player.dy = -player.jumpStrength - player.jumpCharge / 75;
+    }
+  } else {
+    player.jumpCharge = 0;
+  }
+};
+
 const animate = () => {
   gravity();
+  jump();
   clearDrawing();
   drawPlayer();
   drawObstacle();
@@ -59,3 +91,11 @@ const animate = () => {
 };
 
 requestAnimationFrame(animate);
+
+document.addEventListener("keydown", (e) => {
+  keys[e.key as keyof Keys] = true;
+});
+
+document.addEventListener("keyup", (e) => {
+  keys[e.key as keyof Keys] = false;
+});
