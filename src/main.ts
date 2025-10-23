@@ -23,6 +23,7 @@ const player = {
   yPosition: canvasHeight - 64,
   width: 64,
   height: 64,
+  originalHeight: 64,
   color: "black",
   yVelocity: 0,
   jumpHoldFrames: 0,
@@ -91,9 +92,21 @@ const jump = () => {
   }
 };
 
+const duck = () => {
+  if (keys["s"] || keys["Shift"] || keys["ArrowDown"]) {
+    if (player.isGrounded) {
+      player.height = player.originalHeight / 2;
+      player.yPosition = canvasHeight - player.height;
+    }
+  } else {
+    player.height = player.originalHeight;
+  }
+};
+
 const animate = () => {
   gravity();
   jump();
+  duck();
   clearDrawing();
   drawPlayer();
   drawObstacle();
