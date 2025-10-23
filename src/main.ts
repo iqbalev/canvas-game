@@ -7,7 +7,7 @@ type Keys = {
   a?: boolean;
   s?: boolean;
   d?: boolean;
-  Shift?: boolean;
+  Control?: boolean;
   " "?: boolean;
 };
 
@@ -93,7 +93,7 @@ const jump = () => {
 };
 
 const duck = () => {
-  if (keys["s"] || keys["Shift"] || keys["ArrowDown"]) {
+  if (keys["s"] || keys["Control"] || keys["ArrowDown"]) {
     if (player.isGrounded) {
       player.height = player.originalHeight / 2;
       player.yPosition = canvasHeight - player.height;
