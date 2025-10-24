@@ -116,9 +116,11 @@ const animate = () => {
 requestAnimationFrame(animate);
 
 document.addEventListener("keydown", (e) => {
+  e.preventDefault();
   keys[e.key as keyof Keys] = true;
 });
 
 document.addEventListener("keyup", (e) => {
+  e.preventDefault();
   keys[e.key as keyof Keys] = false;
 });
