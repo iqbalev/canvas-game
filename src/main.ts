@@ -32,11 +32,11 @@ const player = {
 };
 
 const obstacle = {
-  xPosition: canvasWidth - 64,
-  yPosition: canvasHeight - 64 - 48, // TODO: Randomize between air and ground obstacle.
-  width: 64,
-  height: 64,
-  color: "red",
+  xPosition: canvasWidth,
+  yPosition: canvasHeight - 32 - 48, // TODO: Randomize between air and ground obstacle.
+  width: 32,
+  height: 32,
+  color: "maroon",
 };
 
 const clearDrawing = () => {
