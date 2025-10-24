@@ -18,6 +18,8 @@ const canvasWidth = (canvas.width = window.innerWidth - 10);
 const gravityAcceleration = 2;
 const keys: Keys = {};
 
+let gameSpeed = 3;
+
 const player = {
   xPosition: 0,
   yPosition: canvasHeight - 64,
@@ -103,8 +105,17 @@ const duck = () => {
   }
 };
 
+const spawnObstacle = () => {
+  obstacle.xPosition -= gameSpeed;
+
+  if (obstacle.xPosition + obstacle.width < canvasWidth - canvasWidth) {
+    obstacle.xPosition = canvasWidth;
+  }
+};
+
 const animate = () => {
   gravity();
+  spawnObstacle();
   jump();
   duck();
   clearDrawing();
