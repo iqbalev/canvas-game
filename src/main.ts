@@ -21,7 +21,7 @@ const keys: Keys = {};
 let gameSpeed = 3;
 
 const player = {
-  xPosition: 0,
+  xPosition: 64,
   yPosition: canvasHeight - 64,
   width: 64,
   height: 64,
@@ -105,10 +105,25 @@ const duck = () => {
   }
 };
 
+const isPlayerCollideWithObstacle = () => {
+  if (
+    player.xPosition + player.width >= obstacle.xPosition &&
+    player.xPosition <= obstacle.xPosition + obstacle.width &&
+    player.yPosition + player.height >= obstacle.yPosition &&
+    player.yPosition <= obstacle.yPosition + obstacle.height
+  ) {
+    console.log("Collide.");
+    return true;
+  }
+};
+
 const spawnObstacle = () => {
   obstacle.xPosition -= gameSpeed;
 
-  if (obstacle.xPosition + obstacle.width < canvasWidth - canvasWidth) {
+  if (
+    isPlayerCollideWithObstacle() ||
+    obstacle.xPosition + obstacle.width < canvasWidth - canvasWidth
+  ) {
     obstacle.xPosition = canvasWidth;
   }
 };
