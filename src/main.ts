@@ -11,16 +11,37 @@ type Keys = {
   " "?: boolean;
 };
 
+type Player = {
+  xPosition: number;
+  yPosition: number;
+  width: number;
+  height: number;
+  originalHeight: number;
+  color: string;
+  yVelocity: number;
+  jumpHoldFrames: number;
+  jumpVelocity: number;
+  isGrounded: boolean;
+};
+
+type Obstacle = {
+  xPosition: number;
+  yPosition: number;
+  width: number;
+  height: number;
+  color: string;
+};
+
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const canvasCtx = canvas.getContext("2d") as CanvasRenderingContext2D;
-const canvasHeight = (canvas.height = window.innerHeight - 10);
-const canvasWidth = (canvas.width = window.innerWidth - 10);
-const gravityAcceleration = 2;
+const canvasHeight: number = (canvas.height = window.innerHeight - 10);
+const canvasWidth: number = (canvas.width = window.innerWidth - 10);
+const gravityAcceleration: number = 2;
 const keys: Keys = {};
 
-let gameSpeed = 3;
+let gameSpeed: number = 3;
 
-const player = {
+const player: Player = {
   xPosition: 64,
   yPosition: canvasHeight - 64,
   width: 64,
@@ -33,7 +54,7 @@ const player = {
   isGrounded: false,
 };
 
-const obstacle = {
+const obstacle: Obstacle = {
   xPosition: canvasWidth,
   yPosition: canvasHeight - 32 - 48, // TODO: Randomize between air and ground obstacle.
   width: 32,
@@ -41,43 +62,18 @@ const obstacle = {
   color: "maroon",
 };
 
-const clearDrawing = () => {
-  canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
-};
-
-const drawPlayer = () => {
-  canvasCtx.fillStyle = player.color;
-  canvasCtx.fillRect(
-    player.xPosition,
-    player.yPosition,
-    player.width,
-    player.height
-  );
-};
-
-const drawObstacle = () => {
-  canvasCtx.fillStyle = obstacle.color;
-  canvasCtx.fillRect(
-    obstacle.xPosition,
-    obstacle.yPosition,
-    obstacle.width,
-    obstacle.height
-  );
-};
-
-const gravity = () => {
-  if (player.yPosition + player.height + player.yVelocity < canvasHeight) {
-    player.yVelocity += gravityAcceleration;
-    player.yPosition += player.yVelocity;
-    player.isGrounded = false;
+const duck = (): void => {
+  if (keys["s"] || keys["Control"] || keys["ArrowDown"]) {
+    if (player.isGrounded) {
+      player.height = player.originalHeight / 2;
+      player.yPosition = canvasHeight - player.height;
+    }
   } else {
-    player.yVelocity = 0;
-    player.yPosition = canvasHeight - player.height;
-    player.isGrounded = true;
+    player.height = player.originalHeight;
   }
 };
 
-const jump = () => {
+const jump = (): void => {
   if (keys[" "] || keys["w"] || keys["ArrowUp"]) {
     if (player.isGrounded && player.jumpHoldFrames === 0) {
       player.jumpHoldFrames = 1;
@@ -94,30 +90,32 @@ const jump = () => {
   }
 };
 
-const duck = () => {
-  if (keys["s"] || keys["Control"] || keys["ArrowDown"]) {
-    if (player.isGrounded) {
-      player.height = player.originalHeight / 2;
-      player.yPosition = canvasHeight - player.height;
-    }
+const gravity = (): void => {
+  if (player.yPosition + player.height + player.yVelocity < canvasHeight) {
+    player.yVelocity += gravityAcceleration;
+    player.yPosition += player.yVelocity;
+    player.isGrounded = false;
   } else {
-    player.height = player.originalHeight;
+    player.yVelocity = 0;
+    player.yPosition = canvasHeight - player.height;
+    player.isGrounded = true;
   }
 };
 
-const isPlayerCollideWithObstacle = () => {
+const isPlayerCollideWithObstacle = (): boolean => {
   if (
     player.xPosition + player.width >= obstacle.xPosition &&
     player.xPosition <= obstacle.xPosition + obstacle.width &&
     player.yPosition + player.height >= obstacle.yPosition &&
     player.yPosition <= obstacle.yPosition + obstacle.height
   ) {
-    console.log("Collide.");
     return true;
+  } else {
+    return false;
   }
 };
 
-const spawnObstacle = () => {
+const spawnObstacle = (): void => {
   obstacle.xPosition -= gameSpeed;
 
   if (
@@ -128,18 +126,42 @@ const spawnObstacle = () => {
   }
 };
 
-const animate = () => {
+const clearDrawing = (): void => {
+  canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
+};
+
+const drawPlayer = (): void => {
+  canvasCtx.fillStyle = player.color;
+  canvasCtx.fillRect(
+    player.xPosition,
+    player.yPosition,
+    player.width,
+    player.height
+  );
+};
+
+const drawObstacle = (): void => {
+  canvasCtx.fillStyle = obstacle.color;
+  canvasCtx.fillRect(
+    obstacle.xPosition,
+    obstacle.yPosition,
+    obstacle.width,
+    obstacle.height
+  );
+};
+
+const start = (): void => {
+  duck();
+  jump();
   gravity();
   spawnObstacle();
-  jump();
-  duck();
   clearDrawing();
   drawPlayer();
   drawObstacle();
-  requestAnimationFrame(animate);
+  requestAnimationFrame(start);
 };
 
-requestAnimationFrame(animate);
+requestAnimationFrame(start);
 
 document.addEventListener("keydown", (e) => {
   e.preventDefault();
