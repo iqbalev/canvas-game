@@ -22,6 +22,7 @@ type Player = {
   jumpHoldFrames: number;
   jumpVelocity: number;
   isGrounded: boolean;
+  isDead: boolean;
 };
 
 type Obstacle = {
@@ -49,6 +50,8 @@ type Game = {
   configs: Configs;
   stats: Stats;
 };
+
+let animationFrame: number;
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const canvasCtx = canvas.getContext("2d") as CanvasRenderingContext2D;
@@ -84,6 +87,7 @@ const game: Game = {
     jumpHoldFrames: 0,
     jumpVelocity: 16,
     isGrounded: true,
+    isDead: false,
   },
   obstacle: {
     // TODO: Randomize between air and ground obstacle.
@@ -179,9 +183,7 @@ const updateGame = (): void => {
       saveHighScore();
     }
 
-    game.obstacle.xPosition = canvasWidth;
-    game.stats.score = 0;
-    game.configs.speed = 5;
+    game.player.isDead = true;
   }
 
   if (isObstacleOffScreen()) {
@@ -224,6 +226,12 @@ const drawObstacle = (): void => {
   );
 };
 
+const drawGameOver = (): void => {
+  canvasCtx.fillStyle = "black";
+  canvasCtx.font = "3rem monospace";
+  canvasCtx.fillText("Game Over", canvasWidth / 2 - 128, canvasHeight / 2);
+};
+
 const gameLoop = (): void => {
   duck();
   jump();
@@ -233,7 +241,13 @@ const gameLoop = (): void => {
   drawScoreboard();
   drawPlayer();
   drawObstacle();
-  requestAnimationFrame(gameLoop);
+
+  if (game.player.isDead) {
+    drawGameOver();
+    cancelAnimationFrame(animationFrame);
+  } else {
+    animationFrame = requestAnimationFrame(gameLoop);
+  }
 };
 
 document.addEventListener("keydown", (e) => {
@@ -244,4 +258,4 @@ document.addEventListener("keyup", (e) => {
   keys[e.key as keyof Keys] = false;
 });
 
-requestAnimationFrame(gameLoop);
+animationFrame = requestAnimationFrame(gameLoop);
