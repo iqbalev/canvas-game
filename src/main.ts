@@ -56,6 +56,22 @@ const canvasHeight: number = (canvas.height = window.innerHeight - 10);
 const canvasWidth: number = (canvas.width = window.innerWidth - 10);
 const keys: Keys = {};
 
+const saveHighScore = (): void => {
+  localStorage.setItem(
+    "canvasGame.highScore",
+    JSON.stringify(game.stats.highScore)
+  );
+};
+
+const loadHighScore = (): number => {
+  const savedHighScore: string | null = localStorage.getItem(
+    "canvasGame.highScore"
+  );
+
+  if (!savedHighScore) return 0;
+  return parseInt(JSON.parse(savedHighScore));
+};
+
 const game: Game = {
   player: {
     xPosition: 64,
@@ -84,7 +100,7 @@ const game: Game = {
   },
   stats: {
     score: 0,
-    highScore: 0,
+    highScore: loadHighScore(),
   },
 };
 
@@ -160,6 +176,7 @@ const updateGame = (): void => {
   if (isPlayerCollideWithObstacle()) {
     if (game.stats.score > game.stats.highScore) {
       game.stats.highScore = game.stats.score;
+      saveHighScore();
     }
 
     game.obstacle.xPosition = canvasWidth;
