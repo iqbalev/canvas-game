@@ -7,6 +7,7 @@ type Keys = {
   a?: boolean;
   s?: boolean;
   d?: boolean;
+  Enter?: boolean;
   Control?: boolean;
   " "?: boolean;
 };
@@ -191,6 +192,16 @@ const updateGame = (): void => {
   }
 };
 
+const resetGame = () => {
+  if (keys["Enter"] && game.player.isDead) {
+    game.player.isDead = false;
+    game.obstacle.xPosition = canvasWidth;
+    game.configs.speed = 5;
+    game.stats.score = 0;
+    animationFrame = requestAnimationFrame(gameLoop);
+  }
+};
+
 const clearDrawing = (): void => {
   canvasCtx.clearRect(0, 0, canvasWidth, canvasHeight);
 };
@@ -226,10 +237,16 @@ const drawObstacle = (): void => {
   );
 };
 
-const drawGameOver = (): void => {
+const drawGameOverScreen = (): void => {
   canvasCtx.fillStyle = "black";
   canvasCtx.font = "3rem monospace";
   canvasCtx.fillText("Game Over", canvasWidth / 2 - 128, canvasHeight / 2);
+  canvasCtx.font = "1.25rem monospace";
+  canvasCtx.fillText(
+    "Press 'Enter' to play again",
+    canvasWidth / 2 - 128,
+    canvasHeight / 2 + 32
+  );
 };
 
 const gameLoop = (): void => {
@@ -243,7 +260,7 @@ const gameLoop = (): void => {
   drawObstacle();
 
   if (game.player.isDead) {
-    drawGameOver();
+    drawGameOverScreen();
     cancelAnimationFrame(animationFrame);
   } else {
     animationFrame = requestAnimationFrame(gameLoop);
@@ -252,6 +269,7 @@ const gameLoop = (): void => {
 
 document.addEventListener("keydown", (e) => {
   keys[e.key as keyof Keys] = true;
+  resetGame(); // Triggered by 'Enter' after the player dies.
 });
 
 document.addEventListener("keyup", (e) => {
