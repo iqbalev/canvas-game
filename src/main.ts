@@ -50,6 +50,7 @@ type Game = {
 
 let animationFrame: number;
 
+const LOCAL_STORAGE_KEY: string = "canvasGame.highScore";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const canvasCtx = canvas.getContext("2d") as CanvasRenderingContext2D;
 const canvasHeight: number = (canvas.height = window.innerHeight - 10);
@@ -57,17 +58,11 @@ const canvasWidth: number = (canvas.width = window.innerWidth - 10);
 const keys: Keys = {};
 
 const saveHighScore = (): void => {
-  localStorage.setItem(
-    "canvasGame.highScore",
-    JSON.stringify(game.stats.highScore)
-  );
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(game.stats.highScore));
 };
 
 const loadHighScore = (): number => {
-  const savedHighScore: string | null = localStorage.getItem(
-    "canvasGame.highScore"
-  );
-
+  const savedHighScore: string | null = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (!savedHighScore) return 0;
   return parseInt(JSON.parse(savedHighScore));
 };
