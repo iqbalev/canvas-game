@@ -1,12 +1,8 @@
 type Keys = {
   ArrowUp?: boolean;
-  ArrowLeft?: boolean;
   ArrowDown?: boolean;
-  ArrowRight?: boolean;
   w?: boolean;
-  a?: boolean;
   s?: boolean;
-  d?: boolean;
   Enter?: boolean;
   Control?: boolean;
   " "?: boolean;
