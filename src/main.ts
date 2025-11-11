@@ -101,7 +101,7 @@ const generateRandomObstacle = (): Obstacle => {
 
   // This will prevent the obstacle being drowned.
   if (newYPosition === 480) {
-    newYPosition = canvasHeight - height - 1;
+    newYPosition = canvasHeight - height;
   } else {
     newYPosition = yPosition - 1;
   }
