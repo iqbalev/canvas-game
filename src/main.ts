@@ -58,7 +58,7 @@ const canvasWidth: number = (canvas.width = window.innerWidth - 10);
 const keys: Keys = {};
 
 const saveHighScore = (): void => {
-  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(game.stats.highScore));
+  localStorage.setItem(LOCAL_STORAGE_KEY, game.stats.highScore.toFixed(0));
 };
 
 const loadHighScore = (): number => {
@@ -203,7 +203,7 @@ const isObstacleOffScreen = (): boolean => {
 
 const updateGame = (): void => {
   game.obstacle.xPosition -= game.configs.speed;
-  game.stats.score++;
+  game.stats.score = game.stats.score + 0.1;
 
   if (game.configs.speed < game.configs.maxSpeed) {
     game.configs.speed += 0.001;
@@ -242,9 +242,9 @@ const clearDrawing = (): void => {
 const drawScoreboard = (): void => {
   canvasCtx.fillStyle = "black";
   canvasCtx.font = "1.5rem monospace";
-  canvasCtx.fillText(`Score: ${game.stats.score}`, 64, 64);
+  canvasCtx.fillText(`Score: ${game.stats.score.toFixed(0)}`, 64, 64);
   canvasCtx.fillText(
-    `High Score: ${game.stats.highScore}`,
+    `High Score: ${game.stats.highScore.toFixed(0)}`,
     canvasWidth - 256,
     64
   );
