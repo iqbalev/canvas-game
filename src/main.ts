@@ -67,6 +67,54 @@ const loadHighScore = (): number => {
   return parseInt(JSON.parse(savedHighScore));
 };
 
+const getRandomIndexFromArray = (array: number[] | string[]): number => {
+  return Math.floor(Math.random() * array.length);
+};
+
+const generateRandomObstacle = (): Obstacle => {
+  const positions: number[] = [360, 400, 440, 480];
+  const dimensions: number[] = [16, 24, 32, 48, 64];
+  const colors: string[] = [
+    "#FF6347",
+    "#FFD1C1",
+    "#FFA07A",
+    "#FF4500",
+    "#F08080",
+    "#FFE4E1",
+    "#8B0000",
+    "#F5DEB3",
+    "#FFB6C1",
+    "#D2691E",
+    "#CD5C5C",
+  ];
+
+  let randomPositionIndex: number = getRandomIndexFromArray(positions);
+  let randomWidthIndex: number = getRandomIndexFromArray(dimensions);
+  let randomHeightIndex: number = getRandomIndexFromArray(dimensions);
+  let randomColorIndex: number = getRandomIndexFromArray(colors);
+
+  let color: string = colors[randomColorIndex];
+  let height: number = dimensions[randomHeightIndex];
+  let width: number = dimensions[randomWidthIndex];
+  let yPosition: number = positions[randomPositionIndex];
+  let newYPosition = yPosition;
+
+  // This will prevent the obstacle being drowned.
+  if (newYPosition === 480) {
+    newYPosition = canvasHeight - height - 1;
+  } else {
+    newYPosition = yPosition - 1;
+  }
+
+  return {
+    xPosition: canvasWidth,
+    yPosition: newYPosition,
+    width,
+    height,
+    color,
+  };
+};
+
 const game: Game = {
   player: {
     xPosition: 64,
@@ -81,14 +129,7 @@ const game: Game = {
     isGrounded: true,
     isDead: false,
   },
-  obstacle: {
-    // TODO: Randomize between air and ground obstacle.
-    xPosition: canvasWidth,
-    yPosition: canvasHeight - 32,
-    width: 32,
-    height: 32,
-    color: "maroon",
-  },
+  obstacle: generateRandomObstacle(),
   configs: {
     speed: 5,
     maxSpeed: 50,
@@ -116,6 +157,7 @@ const jump = (): void => {
     if (game.player.isGrounded && game.player.jumpHoldFrames === 0) {
       game.player.jumpHoldFrames = 1;
       game.player.yVelocity = -game.player.jumpVelocity;
+      // TODO: Reduce jump velocity if the player is ducking.
     } else if (
       game.player.jumpHoldFrames > 0 &&
       game.player.jumpHoldFrames <= game.player.jumpVelocity
@@ -178,15 +220,15 @@ const updateGame = (): void => {
     game.player.isDead = true;
   }
 
-  if (isObstacleOffScreen()) {
-    game.obstacle.xPosition = canvasWidth;
+  if (isObstacleOffScreen(game)) {
+    game.obstacle = generateRandomObstacle();
   }
 };
 
-const resetGame = () => {
+const resetGame = (): void => {
   if (keys["Enter"] && game.player.isDead) {
     game.player.isDead = false;
-    game.obstacle.xPosition = canvasWidth;
+    game.obstacle = generateRandomObstacle();
     game.configs.speed = 5;
     game.stats.score = 0;
     animationFrame = requestAnimationFrame(gameLoop);
