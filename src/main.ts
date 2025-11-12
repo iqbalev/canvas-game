@@ -220,7 +220,7 @@ const updateGame = (): void => {
     game.player.isDead = true;
   }
 
-  if (isObstacleOffScreen(game)) {
+  if (isObstacleOffScreen()) {
     game.obstacle = generateRandomObstacle();
   }
 };
