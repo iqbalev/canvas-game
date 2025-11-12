@@ -53,8 +53,8 @@ let animationFrame: number;
 const LOCAL_STORAGE_KEY: string = "canvasGame.highScore";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const canvasCtx = canvas.getContext("2d") as CanvasRenderingContext2D;
-const canvasHeight: number = (canvas.height = window.innerHeight - 10);
-const canvasWidth: number = (canvas.width = window.innerWidth - 10);
+const canvasHeight: number = (canvas.height = 480);
+const canvasWidth: number = (canvas.width = 640);
 const keys: Keys = {};
 
 const saveHighScore = (): void => {
@@ -226,6 +226,7 @@ const updateGame = (): void => {
 };
 
 const resetGame = (): void => {
+  // TODO: Fix player snap/not good anim after colliding (especially if the player is ducking).
   if (keys["Enter"] && game.player.isDead) {
     game.player.isDead = false;
     game.obstacle = generateRandomObstacle();
